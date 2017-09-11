@@ -34,6 +34,7 @@ jobs:
         - |
           set -e
           export GOPATH=`pwd`/go
+          export PATH=$GOPATH/bin:$PATH
           export DIR=$GOPATH/src/github.com/categolj/blog-feed
           mkdir -p $DIR
           mv repo/* $DIR/
