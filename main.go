@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/categolj/blog-feed/handler"
 	"log"
 	"net/http"
 	"os"
-	"github.com/categolj/blog-feed/handler"
 )
-
 
 func main() {
 	http.HandleFunc("/", handler.Feed)
@@ -21,4 +20,3 @@ func main() {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
-

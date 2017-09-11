@@ -38,7 +38,9 @@ jobs:
           mkdir -p $DIR
           mv repo/* $DIR/
           cd $DIR
-          go test
+          go get github.com/onsi/ginkgo/ginkgo
+          go get github.com/onsi/gomega
+          ginkgo -r
 - name: deploy
   plan:
   - get: repo

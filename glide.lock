@@ -1,8 +1,14 @@
-hash: b133ab9b025e258c819b1b51947df7dae4acc9e70eb7c857f4dcc3502544e2ec
-updated: 2017-09-11T15:15:25.805575933+09:00
+hash: 07cb15286a3b1a5e72db2ec7f0ae85482042a33090a691dc81404f1d1ae0621d
+updated: 2017-09-11T17:06:12.630300559+09:00
 imports:
 - name: github.com/gorilla/feeds
   version: fa8f5548eedbe306d748925237a48d70ae4150de
+- name: github.com/onsi/ginkgo
+  version: 9eda700730cba42af70d53180f9dcce9266bc2bc
+  subpackages:
+  - ginkgo
+- name: github.com/onsi/gomega
+  version: c893efa28eb45626cdaa76c9f653b62488858837
 - name: github.com/ryanmoran/viron
   version: f3865b4826c87b16d3a67e308336b319b3b6859a
 testImports: []
