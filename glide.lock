@@ -1,6 +1,8 @@
-hash: f339f4bba39d6fc2202e7849e46e36182ad2710cec298ee024794db7973a5450
-updated: 2017-09-11T11:06:04.717978845+09:00
+hash: b133ab9b025e258c819b1b51947df7dae4acc9e70eb7c857f4dcc3502544e2ec
+updated: 2017-09-11T15:15:25.805575933+09:00
 imports:
 - name: github.com/gorilla/feeds
   version: fa8f5548eedbe306d748925237a48d70ae4150de
+- name: github.com/ryanmoran/viron
+  version: f3865b4826c87b16d3a67e308336b319b3b6859a
 testImports: []

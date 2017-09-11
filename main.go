@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/categolj/blog-feed/spring_cloud_services"
 	"github.com/gorilla/feeds"
+	"github.com/ryanmoran/viron"
+
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -43,6 +46,19 @@ type Entries struct {
 	Content []Entry `json:"content"`
 }
 
+type Environment struct {
+	VCAPServices struct {
+		ServiceRegistry []struct {
+			Credentials struct {
+				RegistryURI    string `json:"uri"`
+				ClientSecret   string `json:"client_secret"`
+				ClientID       string `json:"client_id"`
+				AccessTokenURI string `json:"access_token_uri"`
+			} `json:"credentials"`
+		} `json:"p-service-registry"`
+	} `env:"VCAP_SERVICES" env-required:"true"`
+}
+
 func main() {
 	http.HandleFunc("/", feed)
 
@@ -56,6 +72,35 @@ func main() {
 	}
 }
 
+func apiUrl() string {
+	var env Environment
+	err := viron.Parse(&env)
+	if err != nil {
+		log.Printf("Unable to parse environment (%s). Falling back to default url", err)
+		var url string
+		if url = os.Getenv("API_URL"); len(url) == 0 {
+			return "https://blog-api.cfapps.pez.pivotal.io/api/entries"
+		}
+		return url
+	}
+	serviceCredentials := env.VCAPServices.ServiceRegistry[0].Credentials
+	uaaClient := &spring_cloud_services.UAAClient{
+		BaseURL: serviceCredentials.AccessTokenURI,
+		Name:    serviceCredentials.ClientID,
+		Secret:  serviceCredentials.ClientSecret,
+	}
+	eurekaClient := &spring_cloud_services.EurekaClient{
+		BaseURL:    serviceCredentials.RegistryURI,
+		HttpClient: http.DefaultClient,
+		UAAClient:  uaaClient,
+	}
+	destination, err := eurekaClient.GetAppByName("blog-api")
+	if err != nil {
+		log.Fatalf("Unable to get application by name: %s", err)
+	}
+	return fmt.Sprintf("https://%s:%d/api/entries", destination.HostName, destination.SecurePort)
+}
+
 func feed(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	feed := &feeds.Feed{
@@ -66,10 +111,8 @@ func feed(w http.ResponseWriter, r *http.Request) {
 		Created:     now,
 	}
 
-	var url string
-	if url = os.Getenv("API_URL"); len(url) == 0 {
-		url = "https://blog-api.cfapps.pez.pivotal.io/api/entries"
-	}
+	url := apiUrl()
+	log.Printf("Calling %s", url)
 	client := http.Client{
 		Timeout: time.Second * 10, // Maximum of 10 secs
 	}

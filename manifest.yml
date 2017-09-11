@@ -9,3 +9,5 @@ applications:
   memory: 32m
   env:
     GOVERSION: go1.9
+  services:
+  - blog-eureka

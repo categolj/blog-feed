@@ -1,3 +1,4 @@
 package: github.com/categolj/blog-feed
 import:
 - package: github.com/gorilla/feeds
+- package: github.com/ryanmoran/viron
