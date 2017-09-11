@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/categolj/blog-feed/spring_cloud_services"
+	scs "github.com/categolj/blog-feed/spring_cloud_services"
 	"github.com/gorilla/feeds"
 	"github.com/ryanmoran/viron"
 
@@ -84,12 +84,12 @@ func apiUrl() string {
 		return url
 	}
 	serviceCredentials := env.VCAPServices.ServiceRegistry[0].Credentials
-	uaaClient := &spring_cloud_services.UAAClient{
+	uaaClient := &scs.UAAClient{
 		BaseURL: serviceCredentials.AccessTokenURI,
 		Name:    serviceCredentials.ClientID,
 		Secret:  serviceCredentials.ClientSecret,
 	}
-	eurekaClient := &spring_cloud_services.EurekaClient{
+	eurekaClient := &scs.EurekaClient{
 		BaseURL:    serviceCredentials.RegistryURI,
 		HttpClient: http.DefaultClient,
 		UAAClient:  uaaClient,
@@ -124,20 +124,20 @@ func feed(w http.ResponseWriter, r *http.Request) {
 
 	req.Header.Set("User-Agent", "blog-feed")
 
-	res, getErr := client.Do(req)
-	if getErr != nil {
-		log.Fatal(getErr)
+	res, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	entries := Entries{}
-	jsonErr := json.Unmarshal(body, &entries)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
+	err = json.Unmarshal(body, &entries)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	for _, entry := range entries.Content {
