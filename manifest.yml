@@ -1,9 +1,9 @@
 ---
 applications:
-- name: feed
+- name: blog-feed
   buildpack: go_buildpack
   domains:
   - ik.am
   memory: 32m
   env:
-    GOVERSION: go1.8
+    GOVERSION: go1.9
