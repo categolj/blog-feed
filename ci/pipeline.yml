@@ -1,0 +1,52 @@
+---
+resources:
+- name: repo
+  type: git
+  source:
+    uri: https://github.com/categolj/blog-feed.git
+- name: cf
+  type: cf
+  source:
+    api: {{cf-api}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-org}}
+    space: blog
+    skip_cert_check: true
+jobs:
+- name: unit-test
+  plan:
+  - get: repo
+    trigger: true
+  - task: unit-test
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: golang
+      inputs:
+      - name: repo
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          set -e
+          export GOPATH=`pwd`/go
+          export DIR=$GOPATH/src/github.com/categolj/blog-feed
+          mkdir -p $DIR
+          mv repo/* $DIR/
+          cd $DIR
+          go test
+- name: deploy
+  plan:
+  - get: repo
+    passed:
+    - unit-test
+    trigger: true
+  - put: cf
+    params:
+      manifest: repo/manifest.yml
+      current_app_name: blog-feed
+      path: repo      
