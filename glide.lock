@@ -1,0 +1,6 @@
+hash: f339f4bba39d6fc2202e7849e46e36182ad2710cec298ee024794db7973a5450
+updated: 2017-09-11T11:06:04.717978845+09:00
+imports:
+- name: github.com/gorilla/feeds
+  version: fa8f5548eedbe306d748925237a48d70ae4150de
+testImports: []

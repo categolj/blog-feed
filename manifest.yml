@@ -1,0 +1,9 @@
+---
+applications:
+- name: feed
+  buildpack: go_buildpack
+  domains:
+  - ik.am
+  memory: 32m
+  env:
+    GOVERSION: go1.8
