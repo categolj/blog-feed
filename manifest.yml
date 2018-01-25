@@ -1,7 +1,7 @@
 ---
 applications:
 - name: blog-feed
-  buildpack: https://github.com/cloudfoundry/go-buildpack.git#v1.8.8
+  buildpack: go_buildpack
   routes:
   - route: feed.ik.am
   - route: rss.ik.am
@@ -9,5 +9,4 @@ applications:
   memory: 32m
   env:
     GOVERSION: go1.9
-  services:
-  - blog-eureka
+    API_URL: https://blog-api-35-190-30-50.sslip.io/api/entries
