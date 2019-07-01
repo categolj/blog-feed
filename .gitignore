@@ -1,1 +1,3 @@
 credentials.yml
+*.cache
+*.droplet

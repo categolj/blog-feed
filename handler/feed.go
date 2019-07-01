@@ -70,6 +70,7 @@ func Feed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req.Header.Set("User-Agent", "blog-feed")
+	req.Header.Set("Accept", "application/json")
 
 	res, err := client.Do(req)
 	if err != nil {

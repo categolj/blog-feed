@@ -1,0 +1,4 @@
+github.com/gorilla/feeds v1.0.0 h1:EbkEvaYf+PXhYNHS20heBG7Rl2X6Zy8l11ZBWAHkWqE=
+github.com/gorilla/feeds v1.0.0/go.mod h1:Nk0jZrvPFZX1OBe5NPiddPw7CfwF6Q9eqzaBbaightA=
+github.com/onsi/ginkgo v0.0.0-20180119174237-747514b53ddd/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
+github.com/onsi/gomega v1.3.0/go.mod h1:C1qb7wdrVGGVU+Z6iS04AVkA3Q65CEZX59MT0QO5uiA=

@@ -1,0 +1,9 @@
+---
+applications:
+- name: blog-feed
+  buildpacks:
+  - https://github.com/cloudfoundry/go-buildpack#v1.8.41
+  memory: 32m
+  env:
+    GOPACKAGENAME: github.com/categolj/blog-feed
+    API_URL: https://blog-api.ik.am/api/entries

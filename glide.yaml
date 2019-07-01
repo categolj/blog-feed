@@ -1,7 +1,0 @@
-package: github.com/categolj/blog-feed
-import:
-- package: github.com/gorilla/feeds
-- package: github.com/onsi/ginkgo
-  subpackages:
-  - ginkgo
-- package: github.com/onsi/gomega
