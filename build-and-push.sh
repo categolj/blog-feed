@@ -1,5 +1,3 @@
 #!/bin/bash
-set -e
-cf local stage blog-feed
-cf local export blog-feed -r making/blog-feed
-docker push making/blog-feed
+set -ex
+pack build making/blog-feed --builder gcr.io/paketo-buildpacks/builder:tiny --publish
