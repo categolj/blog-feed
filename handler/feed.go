@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/feeds"
+	zipkin "github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/middleware/http"
 
 	"io/ioutil"
 	"log"
@@ -48,62 +50,68 @@ func apiUrl() string {
 	return os.Getenv("API_URL")
 }
 
-func Feed(w http.ResponseWriter, r *http.Request) {
-	now := time.Now()
-	feed := &feeds.Feed{
-		Title:       "BLOG.IK.AM",
-		Link:        &feeds.Link{Href: "https://blog.ik.am"},
-		Description: "maki's memo",
-		Author:      &feeds.Author{Name: "Toshiaki Maki", Email: "makingx@gmail.com"},
-		Created:     now,
-	}
+func FeedFactory(client *zipkinhttp.Client) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
 
-	url := apiUrl()
-	log.Printf("Calling %s", url)
-	client := http.Client{
-		Timeout: time.Second * 10, // Maximum of 10 secs
-	}
-
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req.Header.Set("User-Agent", "blog-feed")
-	req.Header.Set("Accept", "application/json")
-
-	res, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	entries := Entries{}
-	err = json.Unmarshal(body, &entries)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, entry := range entries.Content {
-		f := &feeds.Item{
-			Id:      strconv.Itoa(entry.EntryId),
-			Title:   entry.FrontMatter.Title,
-			Link:    &feeds.Link{Href: "https://blog.ik.am/entries/" + strconv.Itoa(entry.EntryId)},
-			Author:  &feeds.Author{Name: entry.Created.Name},
-			Created: entry.Created.Date,
-			Updated: entry.Updated.Date,
+		feed := &feeds.Feed{
+			Title:       "BLOG.IK.AM",
+			Link:        &feeds.Link{Href: "https://blog.ik.am"},
+			Description: "maki's memo",
+			Author:      &feeds.Author{Name: "Toshiaki Maki", Email: "makingx@gmail.com"},
+			Created:     now,
 		}
-		feed.Add(f)
-	}
 
-	rss, err := feed.ToAtom()
-	if err != nil {
-		log.Fatal(err)
-	}
+		url := apiUrl()
+		log.Printf("Calling %s", url)
 
-	fmt.Fprint(w, rss)
+		// retrieve span from context (created by server middleware)
+		span := zipkin.SpanFromContext(r.Context())
+
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		req.Header.Set("User-Agent", "blog-feed")
+		req.Header.Set("Accept", "application/json")
+
+		ctx := zipkin.NewContext(req.Context(), span)
+		req = req.WithContext(ctx)
+
+		res, err := client.DoWithAppSpan(req, "blog:api")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		entries := Entries{}
+		err = json.Unmarshal(body, &entries)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, entry := range entries.Content {
+			f := &feeds.Item{
+				Id:      strconv.Itoa(entry.EntryId),
+				Title:   entry.FrontMatter.Title,
+				Link:    &feeds.Link{Href: "https://blog.ik.am/entries/" + strconv.Itoa(entry.EntryId)},
+				Author:  &feeds.Author{Name: entry.Created.Name},
+				Created: entry.Created.Date,
+				Updated: entry.Updated.Date,
+			}
+			feed.Add(f)
+		}
+
+		rss, err := feed.ToAtom()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Fprint(w, rss)
+	}
 }
