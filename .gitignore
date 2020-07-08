@@ -1,3 +1,4 @@
 credentials.yml
 *.cache
 *.droplet
+blog-feed
