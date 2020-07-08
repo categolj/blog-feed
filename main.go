@@ -24,7 +24,7 @@ func newTracer(port uint16) (*zipkin.Tracer, error) {
 	reporter := reporterhttp.NewReporter(zipkinUrl + "/api/v2/spans")
 
 	// Local endpoint represent the local service information
-	localEndpoint := &model.Endpoint{ServiceName: "blog:blog-feed", Port: port}
+	localEndpoint := &model.Endpoint{ServiceName: "blog:feed", Port: port}
 
 	// Sampler tells you which traces are going to be sampled or not. In this case we will record 100% (1.00) of traces.
 	sampler, err := zipkin.NewCountingSampler(1)
@@ -64,7 +64,7 @@ func main() {
 	r.HandleFunc("/", handler.FeedFactory(client))
 	r.Use(zipkinhttp.NewServerMiddleware(
 		tracer,
-		zipkinhttp.SpanName("rss"),
+		zipkinhttp.SpanName("feed"),
 	))
 
 	log.Printf(fmt.Sprintf("Listening at %s", port))

@@ -82,7 +82,7 @@ spec:
         app: blog-feed
     spec:
       containers:
-      - image: making/blog-feed@sha256:51d885e1fbbd5b87831daf60a60b93afeccf404e9b39cd538b36cea61e7368bc
+      - image: making/blog-feed
         name: blog-feed
         ports:
         - containerPort: 8080
