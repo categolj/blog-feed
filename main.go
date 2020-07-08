@@ -61,7 +61,10 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", handler.FeedFactory(client))
+	feed := handler.FeedFactory(client)
+	r.HandleFunc("/", feed)
+	r.HandleFunc("/rss", feed)
+	r.HandleFunc("/feed", feed)
 	r.Use(zipkinhttp.NewServerMiddleware(
 		tracer,
 		zipkinhttp.SpanName("feed"),
