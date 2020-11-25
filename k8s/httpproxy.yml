@@ -1,0 +1,44 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: blog-feed
+  namespace: blog
+spec:
+  virtualhost:
+    fqdn: feed.lab.maki.lol
+    tls:
+      secretName: certificate-tls
+  routes:
+  - services:
+    - name: blog-feed
+      port: 8080
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: blog-rss
+  namespace: blog
+spec:
+  virtualhost:
+    fqdn: rss.lab.maki.lol
+    tls:
+      secretName: certificate-tls
+  routes:
+  - services:
+    - name: blog-feed
+      port: 8080
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: blog-atom
+  namespace: blog
+spec:
+  virtualhost:
+    fqdn: atom.lab.maki.lol
+    tls:
+      secretName: certificate-tls
+  routes:
+  - services:
+    - name: blog-feed
+      port: 8080
